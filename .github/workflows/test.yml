@@ -2,8 +2,34 @@ on: [push]
 name: Tests
 
 jobs:
+  prevent_duplicates:
+    name: Prevent duplicate runs
+    runs-on: ubuntu-20.04
+    outputs:
+      result: ${{ steps.existing_checks.outputs.result }}
+    steps:
+      - name: Fetch existing checks
+        id: existing_checks
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const checks = github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              check_name: 'Prevent duplicate runs'
+            })
+            console.log(checks)
+            return (checks.length > 1)
+
   perform_stuff:
+    needs:
+      - prevent_duplicates
     runs-on: ubuntu-20.04
     steps:
       - name: Sleep 60
-        run: sleep 60
+        id: wait
+        run: |
+          echo "${{ needs.prevent_duplicates.outputs.result }}"
+          sleep 60
