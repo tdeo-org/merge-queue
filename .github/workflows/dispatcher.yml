@@ -1,0 +1,30 @@
+on: [push]
+name: Dispatch workflow
+
+jobs:
+  prevent_duplicates:
+    name: Workflow dispatcher
+    runs-on: ubuntu-20.04
+    outputs:
+      result: ${{ steps.existing_checks.outputs.result }}
+    steps:
+      - name: Fetch existing checks
+        id: existing_checks
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const { data: { total_count, check_runs } } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              check_name: 'Workflow dispatcher'
+            })
+            console.dir(check_runs, { depth: 12 })
+            return (total_count > 1)
+
+  trigger_test_workflow:
+    needs:
+      - prevent_duplicates
+    if: ${{ needs.prevent_duplicates.outputs.result != 'true' }}
+    uses: ./.github/workflows/test.yml
