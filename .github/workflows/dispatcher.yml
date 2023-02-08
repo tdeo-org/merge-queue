@@ -34,7 +34,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const res = await github.actions.createWorkflowDispatch({
+            const res = await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
