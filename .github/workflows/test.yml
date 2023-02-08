@@ -27,6 +27,7 @@ jobs:
     needs:
       - prevent_duplicates
     runs-on: ubuntu-20.04
+    if: ${{ needs.prevent_duplicates.outputs.result != 'true' }}
     steps:
       - name: Sleep 60
         id: wait
