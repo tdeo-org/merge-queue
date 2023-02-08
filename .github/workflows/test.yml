@@ -14,14 +14,14 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const checks = await github.rest.checks.listForRef({
+            const { total_count, check_runs } = await github.rest.checks.listForRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
               check_name: 'Prevent duplicate runs'
             })
-            console.log(checks)
-            return (checks.length > 1)
+            console.dir(check_runs, { depth: 12 })
+            return (total_count > 1)
 
   perform_stuff:
     needs:
