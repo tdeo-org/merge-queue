@@ -24,6 +24,8 @@ jobs:
             return (total_count > 1)
 
   trigger_test_workflow:
+    permissions:
+      actions: write
     runs-on: ubuntu-20.04
     needs:
       - prevent_duplicates
