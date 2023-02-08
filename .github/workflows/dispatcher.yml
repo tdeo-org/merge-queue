@@ -27,4 +27,16 @@ jobs:
     needs:
       - prevent_duplicates
     if: ${{ needs.prevent_duplicates.outputs.result != 'true' }}
-    uses: ./.github/workflows/test.yml
+    steps:
+      - name: Trigger test workflow
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const res = await github.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              workflow_id: 'test',
+            })
+            console.dir(res, { depth: 12 })
