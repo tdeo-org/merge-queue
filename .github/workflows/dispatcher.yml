@@ -24,6 +24,7 @@ jobs:
             return (total_count > 1)
 
   trigger_test_workflow:
+    runs-on: ubuntu-20.04
     needs:
       - prevent_duplicates
     if: ${{ needs.prevent_duplicates.outputs.result != 'true' }}
